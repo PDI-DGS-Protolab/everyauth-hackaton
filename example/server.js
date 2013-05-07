@@ -21,6 +21,8 @@ function addUser (source, sourceUser) {
   return user;
 }
 
+//HERE we store users
+var usersByMovistarId = {};
 var usersByVimeoId = {};
 var usersByJustintvId = {};
 var usersBy37signalsId = {};
@@ -59,6 +61,17 @@ everyauth.everymodule
   .findUserById( function (id, callback) {
     callback(null, usersById[id]);
   });
+  
+
+everyauth.movistar
+  .appId(conf.movistar.clientId)
+  .appSecret(conf.movistar.clientSecret)
+  .scope('userdata.user.read.basic')
+  .findOrCreateUser( function (sess, accessToken, extra, movistarUser) {
+    return usersByMovistarId[movistarUser.userId] || (usersByMovistarId[movistarUser.userId] = addUser('movistar', movistarUser));
+  })
+  .redirectPath('/');
+
 
 everyauth.azureacs
   .identityProviderUrl('https://acssample1.accesscontrol.windows.net/v2/wsfederation/')
