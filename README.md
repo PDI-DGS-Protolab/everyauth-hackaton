@@ -18,12 +18,15 @@ and then run `npm install`
 
 
 Usage:
+
+You can see the implementation in examples/server.js folder and/or read that:
+
 ```js
 var everyauth = require('everyauth');
 
 everyauth.movistar
-    .appId('ConsumerKey') //your Appid from TDAF-SDP App Manager
-    .appSecret('ConsumerSecret') //your Appid from TDAF-SDP App Manager
+    .appId('ConsumerKey') //your ConsumerKey from TDAF-SDP App Manager
+    .appSecret('ConsumerSecret') //your ConsumerSecret from TDAF-SDP App Manager
     .scope('userdata.user.read.basic space_separated_scopes') //Scopes to be granted
     //adding 'userdata.user.read.basic' scope will allow this library to retrieve the user profile
     //from Telefonica Digital Accounts API once the user has logged in. 
