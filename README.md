@@ -3,6 +3,93 @@ everyauth
 
 Authentication and authorization (password, facebook, & more) for your node.js Connect and Express apps.
 
+This modified library is a temporary one created for the TDAF Hackaton to be hold on 08-09/May/2013
+It includes the "movistar" login mechanism, to be used in the challenges and proof of concepts.
+
+### Movistar OAuth2
+
+Usage:
+```js
+var everyauth = require('everyauth');
+
+everyauth.movistar
+    .appId('ConsumerKey') //your Appid from TDAF-SDP App Manager
+    .appSecret('ConsumerSecret') //your Appid from TDAF-SDP App Manager
+    .scope('userdata.user.read.basic space_separated_scopes') //Scopes to be granted
+    //adding 'userdata.user.read.basic' scope will allow this library to retrieve the user profile
+    //from Telefonica Digital Accounts API once the user has logged in. 
+    //In the following callback, the 'user' var has the profile info 
+    .findOrCreateUser( function (session, accessToken, accessTokenExtra, user) {
+    // find or create user logic goes here
+    // Return a user or Promise that promises a user
+    // Promises are created via
+    //     var promise = this.Promise();
+    
+    //Example of what is returned from the TDA Profile API: 
+    //  user.firstName
+    //  user.surname
+    //  user.userId
+    })
+    .redirectPath('/');
+
+//now you will have two endpoints exposed in your server
+//http://domain/auth/movistar  <-- Call when your want to authorize a user
+//http://domain/auth/movistar/callback  <-- Add it as a callback in TDAF-SDP App Manager
+
+//Once the user has authorized your app, you will have available in express request (connect) the 
+//user info, including the access token
+
+//So Lets code a route that, when called by the browser, makes a request to a service on behalf of the user
+//app is your express server
+app.get('/callDogs', function (req, res){
+    var tokenInfo;
+    //check if the user connected to me has logged with movistar
+    if (req.session.auth  && req.session.auth.movistar){
+        tokenInfo = req.session.auth.movistar
+    }
+
+    //prepare the call to some endpoint
+    var options = {
+        host: 'foo-test.apigee.net',
+        port: 80,
+        path: '/someendpoint',
+        method: 'GET'
+    };
+    if (tokenInfo){
+        options.headers = {
+            Authorization: "Bearer " + tokenInfo.accessToken
+        };
+    }
+
+    //Now we make the API request, and will reply to the browser with the data returned by the API
+    forwardCall(req, res, options);
+});
+
+/**
+ * Makes a request to an API
+ */
+var forwardCall = function performCall(req,res, options){
+    var reqApi = http.request(options, function (resApi){
+        var data = '';
+        resApi
+            .on('data', function(chunk){
+                data += chunk.toString();
+            })
+            .on('end', function (){
+            	//When the API request ends, send the data directly to the browser
+                res.end(data);
+            });
+    });
+    reqApi.on('error', function (e){
+        res.json({error:"The API call has failed", desc:e});
+    });
+    reqApi.setTimeout(5000, function (){
+        reqApi.abort();
+    });
+    reqApi.end();
+}
+```
+
 There is a NodeTuts screencast of everyauth [here](http://nodetuts.com/tutorials/26-starting-with-everyauth.html#video)
 
 There is also a Google Groups (recently created)
