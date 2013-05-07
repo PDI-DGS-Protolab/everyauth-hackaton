@@ -64,8 +64,8 @@ everyauth.everymodule
   
 
 everyauth.movistar
-  .appId(conf.movistar.clientId)
-  .appSecret(conf.movistar.clientSecret)
+  .appId(conf.movistar.consumerKey)
+  .appSecret(conf.movistar.consumerSecret)
   .scope('userdata.user.read.basic')
   .findOrCreateUser( function (sess, accessToken, extra, movistarUser) {
     return usersByMovistarId[movistarUser.userId] || (usersByMovistarId[movistarUser.userId] = addUser('movistar', movistarUser));
