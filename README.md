@@ -7,6 +7,15 @@ This modified library is a temporary one created for the TDAF Hackaton to be hol
 It includes the "movistar" login mechanism, to be used in the challenges and proof of concepts.
 
 ### Movistar OAuth2
+install:
+add the following to your `packages.json`
+```json
+"dependencies": {
+  "everyauth": "https://github.com/PDI-DGS-Protolab/everyauth-hackaton/tarball/master"
+}
+```
+and then run `npm install`
+
 
 Usage:
 ```js
